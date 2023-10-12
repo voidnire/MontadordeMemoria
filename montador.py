@@ -96,6 +96,8 @@ def bintoHex(vetor_binario):
   hexadecimal = hex(decimal)[2:].upper()
   return hexadecimal
 
+
+
 def linhaporlinha(assembly_file, vet):  # Abre o arquivo assembly e retorna o binario
   with open(assembly_file, 'r') as arquivo:
       linhas = arquivo.readlines()
@@ -104,13 +106,22 @@ def linhaporlinha(assembly_file, vet):  # Abre o arquivo assembly e retorna o bi
   for linha in linhas:
       linha = linha.strip()  
     
-      if not linha or linha.startswith(';'):
+      if not linha or linha.startswith(';') or linha.startswith(".data") or linha.startswith(".DATA"):
           continue  # remove comentários ao final da linha
       if ';' in linha:
           linha = linha.split(';')[0].strip()  # divide em duas partes e pega só a 1°
     
+      if linha.startswith("word") or linha.startswith("WORD"):#guarda apenas o numero para a memoria
+        ultimo = linha.split()[-1]
+        
+        if ultimo.startswith("0x"):
+          ul = str(ultimo)
+          ultimo = ul[2:]
+
+        vet.append(ultimo)
+        continue
+      
       lista = proBinario(linha)  # lê cada linha e transforma em binário
-      print(lista,"\n")
       endereco = ""
       end = ""
       ultimo = str(lista[-1])
@@ -150,7 +161,6 @@ def write_outputfile(memory_file,vet):
 def main(mem_file,assembly_file):
   vet = []
   linhaporlinha(assembly_file, vet)
-  print(vet)
   write_outputfile(mem_file,vet)
 
 
